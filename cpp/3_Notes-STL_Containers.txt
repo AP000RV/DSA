@@ -1,0 +1,173 @@
+Containers:
+1. SEQUENCE CONTAINERS
+2. STACK and QUEUES
+3. SETS
+4. MAPS
+
+SEQUENCE CONTAINERS
+std::vector<T>
+===============
+- represents an array that can dynamically grow (and shrink)
+
+std::vector<double> values;
+
+This typically has no space for elements allocated yet, so memory will need to be allocated dynamically when you add the first data item.
+
+values.push_back(3.1415); // Add an element to the end of the vector
+values.pop_back();	// Remove last element from vector
+
+std::vector<double> values(20); // Vector contains 20 double values - all zero
+std::vector<long> numbers(20, 99L); // Vector contains 20 long values - all 99
+std::vector<unsigned int> primes { 2, 3, 5, 7, 11, 13, 17, 19 };
+
+Capacity
+size() – Returns the number of elements in the vector.
+max_size() – Returns the maximum number of elements that the vector can hold.
+capacity() – Returns the size of the storage space currently allocated to the vector expressed as number of elements.
+resize(n) – Resizes the container so that it contains ‘n’ elements.
+empty() – Returns whether the container is empty.
+shrink_to_fit() – Reduces the capacity of the container to fit its size and destroys all elements beyond the capacity.
+reserve() – Requests that the vector capacity be at least enough to contain n elements.
+
+Element access:
+reference operator [g] – Returns a reference to the element at position ‘g’ in the vector
+at(g) – Returns a reference to the element at position ‘g’ in the vector
+front() – Returns a reference to the first element in the vector
+back() – Returns a reference to the last element in the vector
+data() – Returns a direct pointer to the memory array used internally by the vector to store its owned elements.
+
+Modifiers:
+assign() – It assigns new value to the vector elements by replacing old ones
+push_back() – It push the elements into a vector from the back
+pop_back() – It is used to pop or remove elements from a vector from the back.
+insert() – It inserts new elements before the element at the specified position
+erase() – It is used to remove elements from a container from the specified position or range.
+swap() – It is used to swap the contents of one vector with another vector of same type. Sizes may differ.
+clear() – It is used to remove all the elements of the vector container
+emplace() – It extends the container by inserting new element at position
+emplace_back() – It is used to insert a new element into the vector container, the new element is added to the end of the vector
+
+Linked Lists
+=============
+std::forward_list<T> - singly linked list
+std::list<T> - doubly linked list
+
+use vector always
+
+Deque - double-ended queue (pronounced as deck)
+=======
+It is somewhat of a hybrid data structure with the following advantages:
+•	 Just like array<> and vector<>, deque<> is a random access container, meaning it has constant-time operator[] and at() operations.
+•	 Just like a list<>, a deque<> allows you to add elements in constant time both at the front and the back of the sequence. A vector<> only supports constant-time additions to the back of the sequence.
+•	 Unlike a vector<>, the elements of a deque<> are never moved to another bigger array when adding to or removing from either the front or the back of the sequence. This means that T* pointers to elements stored inside the container remain valid (provided you do not insert into or remove from the middle of the sequence using the functions explained later in this chapter, that is)
+std::vector caters to 95% of sequence container scenarios.
+
+STACKS AND QUEUES
+std::stack, std::queue, std::priority_queue => called container adapters
+
+std::stack -> LIFO, push, top, pop
+std::queue -> FIFO, push, front, pop
+
+std::priority_queue
+constant time lookup of the largest (by default) element and logarithmic insertion and extraction
+
+priority_queue
+<queue>
+push(),pop(),top()
+The order in which elements exit a priority_queue<T> is determined by a comparison functor.
+By default, the std::less<T> functor is used.
+
+SETS
+a set is a container in which each element can appear at most once.
+Adding a second element equal to any of the elements that is already stored in a set has no effect
+insert(), erase(), clear(), count(), find()
+
+-use these set containers to manage or gather a collection of duplicate-free elements
+-very good (log or constant time) at quickly checking whether they contain a given element or not
+
+std::set<>, std::unorderd_set<> - both use drastically different DS
+
+Ordered Sets:
+a regular set<> organizes its elements such that they are always sorted
+
+a std::set<> is normally backed by some balanced tree data structure (typically a red-black tree).
+
+By default, a set<> orders all elements using the < operator
+you could also override the way a set<> orders its elements by specifying which functor it should us
+std::set<int, std::greater<>> my_set
+
+Unordered Sets:
+An unordered_set<> does not order its elements
+t is backed by a so-called hash table or hash map. All operations of an unordered_set<> consequently usually run in near-constant time, making them
+potentially even faster than a regular set<>.
+
+std::multiset and std::unordered_multiset
+
+MAPS
+Map is an associative array. Set of Key-Value pairs
+std::map<Key,Value>
+std::unordered_map<Key,Value>
+
+
+std::map<std::string, unsigned long long> phone_book;
+phone_book["Donald Trump"] = 202'456'1111;
+phone_book["Melania Trump"] = 202'456'1111;
+phone_book["Francis"] = 39'06'6982;
+phone_book["Elizabeth"] = 44'020'7930'4832;
+
+phone_book["Donald Trump"]
+
+C++ 17:
+for (const auto& [name, number] : phone_book)
+	std::cout << name << " can be reached at " << number << std::endl;
+
+
+C++ 11:
+for (const auto& element : phone_book)
+	std::cout << element.first << " can be reached at " << element.second << std::endl;
+
+
+C++ full syntax:
+for (const std::pair<std::string, unsigned long long>& element : phone_book)
+	std::cout << element.first << " can be reached at " << element.second << std::endl;
+
+For defining pair, in C++ 17:
+std::pair my_pair{ false, 77.50 };
+auto [my_bool, my_number] = my_pair;
+
+earlier:
+std::pair<bool, double> my_pair{ false, 77.50 };
+bool my_bool = my_pair.first;
+double my_number = my_pair.second;
+
+String Views:
+Pre C++ 17
+void foo(std::string const& s);      // pre-C++17, single argument, could incur
+                                     // allocation if caller's data was not in a string
+                                     // (e.g. string literal or vector<char> )
+
+void foo(const char* s, size_t len); // pre-C++17, two arguments, have to pass them
+                                     // both everywhere
+
+void foo(const char* s);             // pre-C++17, single argument, but need to call
+                                     // strlen()
+									 
+Post C++ 17:
+void foo(std::string_view s);        // post-C++17, single argument, tighter coupling
+                                     // zero copies regardless of how caller is storing
+                                     // the data
+									 
+Note that std::string_view cannot modify its underlying data.
+string_view is useful when you want to avoid unnecessary copies.
+
+It offers a useful subset of the functionality that std::string does.
+std::string str = "lllloooonnnngggg sssstttrrriiinnnggg"; //A really long string
+
+//Bad way - 'string::substr' returns a new string (expensive if the string is long)
+std::cout << str.substr(15, 10) << '\n';
+
+//Good way - No copies are created!
+std::string_view view = str;
+
+// string_view::substr returns a new string_view
+std::cout << view.substr(15, 10) << '\n';

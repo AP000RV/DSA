@@ -1,0 +1,122 @@
+ITERATORS
+Iterator as design pattern
+
+Iterators for Standard Library Containers
+All container types of the Standard Library offer iterators that are completely analogous. No matter which containers you work with, you can always traverse the elements they store in the same manner.
+
+Creating and Working with Standard Iterators
+std::vector<char> letters{ 'a', 'b', 'c', 'd', 'e' };
+auto my_iter{ letters.begin() }; 
+
+Its always of the form: ContainerType::iterator
+std::vector<char>::iterator my_iter{ letters.begin() };
+
+Mimics a pointer.
+std::cout << *my_iter << std::endl; // a
+*my_iter = 'x';
+std::cout << letters[0] << std::endl; // x
+++my_iter;
+auto copy{ my_iter };
+my_iter += 2;
+std::cout << *copy << std::endl; // c
+std::cout << *my_iter << std::endl; // e
+std::cout << my_iter - copy << std::endl; // 2
+
+Different Flavors of Iterators
+forward (no --, -, -=) - unordered_set<>, unordered_map<>, and unordered_multimap<>.
+bidirectional (only --, ++) - list<>, std::set<>, map<>, and multimap<>
+random-access (--,++, -=, +=, >, <) - std::vector<>, array<>, and deque<>
+form hierarchy
+
+the three container adapters—std::stack<>, queue<>, and priority_queue<>—do not offer any
+iterators at all—not even forward iterators
+
+int numbers[] { 1, 2, 3, 4, 5 };
+for (int* pnumber {numbers}; pnumber < numbers + std::size(numbers); ++pnumber)
+{
+	std::cout << *pnumber << ' ';
+}
+std::cout << std::endl;
+
+You could traverse all elements of a vector in precisely the same manner:
+
+std::vector<int> numbers{ 1, 2, 3, 4, 5 };
+for (auto iter {numbers.begin()}; iter < numbers.begin() + numbers.size(); ++iter)
+{
+	std::cout << *iter << ' ';
+}
+std::cout << std::endl;
+
+The problem with this loop is that it uses two operations that are exclusive to random-access iterators:
+< and +. This loop would thus not have compiled had numbers been, for instance, of type std::list<int> or std::set<int>. A more conventional way of expressing this same loop, therefore, is this:
+for (auto iter {numbers.begin()}; iter != numbers.end(); ++iter)
+{
+	std::cout << *iter << ' ';
+}
+
+Conceptually, iterators returned by a container’s end() member point to “one past the last
+element.”
+
+Range based for loop is also possible with iterators
+for (auto number : numbers)
+{
+	std::cout << number << ' ';
+}
+
+Const Iterators
+ContainerType::const_iterator. 
+There are two ways you typically obtain a const iterator:
+1. By calling cbegin() or cend() instead of begin() or end()
+2. By invoking begin() or end() on a const container.
+
+Inserting in and Erasing from Sequence Containers
+std::vector<int> numbers{ 2, 4, 5 };
+numbers.insert(numbers.begin(), 1); // Add single element to the beginning of the sequence
+printVector(numbers); // 1 2 4 5
+
+numbers.insert(numbers.begin() + numbers.size() / 2, 3); // Add in the middle
+printVector(numbers); // 1 2 3 4 5
+
+std::vector<int> more_numbers{ 6, 7, 8 };
+numbers.insert(numbers.end(), more_numbers.begin(), more_numbers.end());
+printVector(numbers); // 1 2 3 4 5 6 7 8
+
+numbers.erase(numbers.end() - 3, numbers.end()); // Erase last 3 elements
+numbers.erase(numbers.begin() + numbers.size() / 2); // Erase the middle element
+numbers.erase(numbers.begin()); // Erase the first element
+printVector(numbers); // 2 4 5
+
+Altering Containers During Iteration
+any modification to a container is said to invalidate all iterators that were ever created for that container.
+Once you modify a sequence, you should generally stop using any existing iterators.
+
+template <typename NumberContainer>
+void removeEvenNumbers(NumberContainer& numbers) /* Wrong!! */
+{
+	auto from{ numbers.begin() }, to{ numbers.end() };
+	for (auto iter {from}; iter != to; ++iter)
+	{
+		if (*iter % 2 == 0)
+			numbers.erase(iter);
+	}
+}
+
+template <typename NumberContainer>
+void removeEvenNumbers(NumberContainer& numbers) /* Correct!! */
+{
+	for (auto iter {numbers.begin()}; iter != numbers.end(); )
+	{
+		if (*iter % 2 == 0)
+		{
+			iter = numbers.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+}
+Most erase() and insert() functions return an iterator that you can use to continue the iteration with.
+
+Iterators and arrays
+standalone STL functions std::begin() std::end for arrays (and other iterators)
